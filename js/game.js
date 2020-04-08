@@ -3,15 +3,15 @@
 // [i, j] -> obj{col, row, box}
 
 const sodokuBoard = [];
-const counter = new Array(9);
+const counter = new Array(10);
 
-const rowDuplicates = new Array(9);
-const colDuplicates = new Array(9);
-const boxDuplicates = new Array(9);
+let rowDuplicates = new Array(9);
+let colDuplicates = new Array(9);
+let boxDuplicates = new Array(9);
 
-rowDuplicates.fill([]);
-colDuplicates.fill([]);
-boxDuplicates.fill([]);
+rowDuplicates = Array.from(rowDuplicates, function() { return [];})
+colDuplicates = Array.from(colDuplicates, function() { return [];})
+boxDuplicates = Array.from(boxDuplicates, function() { return [];})
 
 let numStorage = {
     col: colDuplicates,
@@ -19,34 +19,19 @@ let numStorage = {
     box: boxDuplicates
 }
 
-
-
 counter.fill(0);
-
-
-let nums = new Map();
 
 for (let i = 0; i < 9; i++) {
     sodokuBoard[i] = [];
     for (let j = 0; j < 9; j++) {
         sodokuBoard[i][j] = 0;
-        const mapKey = i + "_" + j;
-        nums.set(mapKey, {
-            col: [],
-            row: [],
-            box: []
-        })
     }
 }
-
-console.log(sodokuBoard);
-
-// console.log([0, 0].toString());
 
 const game = document.getElementById("game");
 const board = document.createElement("board");
 
-// add event listeners to inner & outer squares
+// add divs to each inner and outer square
 sodokuBoard.forEach(function (outer, i) {
     let outerSquare = document.createElement("div");
     // outerSquare.textContent = outer[0];
@@ -86,23 +71,6 @@ sodokuBoard.forEach(function (outer, i) {
         input.setAttributeNode(input_i);
         input.setAttributeNode(input_j);
         
-
-        input.oninput = function() {
-            if (this.value === 0) this.value = "";
-            if (this.value.length > 1) {
-                this.value = this.value.slice(0, 1);
-            }
-
-            // checking if input is allowed
-        //    if (!validNumInput(i, j, this.value)) {
-        //         this.value = "";
-        //         input.style.backgroundColor = "red";
-        //         console.log("ERROR")
-        //    } else {
-        //         counter[this.value]++;
-        //    }
-        }
-
         input.onkeydown = function(e) {
             if (!((e.keyCode > 96 && e.keyCode < 106) ||
             (e.keyCode > 48 && e.keyCode < 58))) {
@@ -113,48 +81,74 @@ sodokuBoard.forEach(function (outer, i) {
 
         innerSquare.appendChild(input);
         innerSquare.classList += " inner-square";
-        innerSquare.addEventListener("click", function() {
-            innerSquare.classList += " inner-square-focus";
-            alert(i + " - " + j);
-            validNumInput(event.target.getAttribute("data-i"), event.target.getAttribute("data-j"), event.target.value)
-        })
         outerSquare.appendChild(innerSquare);
     })
     board.appendChild(outerSquare);
 })
 
+// event listener for inputs
+document.addEventListener("input", function() {
+    let el = event.target;
+    let val = el.value;
+    let i = el.getAttribute("data-i");
+    let j = el.getAttribute("data-j");
+
+    if (val === 0) val = "";
+    if (val.length > 1) {
+        val = val.slice(0, 1);
+    }
+
+    // checking if input is allowed
+   if (!validNumInput(i, j, val)) {
+        el.style.backgroundColor = "#ff8c7d";
+   } else {
+        counter[+val]++;
+        el.style.backgroundColor = "";
+   }
+})
+
 // input validation functions
+function randomize(x) {
+    // let row = 0;
+    // let col = 0;
+    // let count = 10
+    // if (count)
+}
 
 function validNumInput(i, j, input) {
     // only valid if column, row, and box doesn't have num
     const mapKey = i + "_" + j;
-    // let currBox = nums.get(mapKey);
-    console.log(mapKey)
-    if (numStorage.col.includes(input) || numStorage.row.includes(input) || numStorage.box.includes(input)) {
-        console.log("help");
+    i = +i, j=+j, input = +input;
+    if (numStorage.col[checkCols(i, j)].includes(input) || numStorage.row[checkRows(i, j)].includes(input) || numStorage.box[checkBox(i, j)].includes(input)) {
         return false;
-    
     }
 
-    // numStorage.col[checkCols(i, j)].push(input);
-    // numStorage.row[checkRows(i, j)].push(input);
-    console.log("i: " + i + " - j: " + j)
-    console.log("row: " + checkRows(i, j))
-    console.log("col: " + checkCols(i, j))
-    console.log("box: " + checkBox(i, j))
-
-    // numStorage.box[boxIdx].push(input);
-    console.log(numStorage)
+    numStorage.col[checkCols(i, j)].push(input);
+    numStorage.row[checkRows(i, j)].push(input);
+    numStorage.box[checkBox(i, j)].push(input);
 
     return true;
 }
 
 function numAvailable() {
-    return counter.indexOf(9);
+    return !counter.indexOf(9);
 }
 
 function boxOrLineFinished() {
     // check if a line if complete (additional feature)
+    if (numAvailable()) return false;
+    return counter.indexOf(9);
+}
+
+// bonus feature: multiple levels
+function fillRandomNumOfBoxs(input) {
+    if (input === "easy") {
+
+    } else if (input === "medium") {
+
+    } else {
+
+    }
 }
 
 function checkCols(i, j) {
@@ -210,4 +204,9 @@ function checkBox(i, j) {
 }
 // add board to game
 game.appendChild(board);
+
+/**
+ * the value inserted was being duplicated because Array.fill
+ * was using the same referenced array for each spot in the larger array
+ */
 
