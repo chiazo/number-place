@@ -1,0 +1,26 @@
+{
+  "name": "number-place",
+  "version": "1.0.0",
+  "description": "a sodoku game",
+  "main": "js/game.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lite": "lite-server",
+    "start": "concurrently \"npm run lite\" "
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chiazo/number-place.git"
+  },
+  "author": "Chiazo",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chiazo/number-place/issues"
+  },
+  "homepage": "https://github.com/chiazo/number-place#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "concurrently": "^5.1.0",
+    "lite-server": "^2.5.4"
+  }
+}
