@@ -297,3 +297,12 @@ input::-webkit-inner-spin-button {
   -moz-appearance: textfield;
   -webkit-appearance: none;
 }
+
+#numbers, #restart {
+  text-align: center;
+  margin: 1rem;
+}
+
+#numbers > button {
+  margin: 4px;
+}

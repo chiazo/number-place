@@ -9,9 +9,9 @@ let rowDuplicates = new Array(9);
 let colDuplicates = new Array(9);
 let boxDuplicates = new Array(9);
 
-rowDuplicates = Array.from(rowDuplicates, function() { return [];})
-colDuplicates = Array.from(colDuplicates, function() { return [];})
-boxDuplicates = Array.from(boxDuplicates, function() { return [];})
+rowDuplicates = Array.from(rowDuplicates, function () { return []; })
+colDuplicates = Array.from(colDuplicates, function () { return []; })
+boxDuplicates = Array.from(boxDuplicates, function () { return []; })
 
 let numStorage = {
     col: colDuplicates,
@@ -36,14 +36,12 @@ sodokuBoard.forEach(function (outer, i) {
     let outerSquare = document.createElement("div");
     // outerSquare.textContent = outer[0];
     outerSquare.classList += " outer-square";
-    outerSquare.addEventListener("click", function() {
-        outerSquare.classList += " outer-square-focus";
-    })
-    outer.forEach(function(inner, j) {
+
+    outer.forEach(function (inner, j) {
         let innerSquare = document.createElement("div");
-        
+
         let input = document.createElement("input");
-        
+
         let input_type = document.createAttribute("type");
         let input_max = document.createAttribute("max");
         let input_min = document.createAttribute("min");
@@ -70,12 +68,18 @@ sodokuBoard.forEach(function (outer, i) {
         input.setAttributeNode(input_oninput);
         input.setAttributeNode(input_i);
         input.setAttributeNode(input_j);
-        
-        input.onkeydown = function(e) {
+
+        input.onkeydown = function (e) {
             if (!((e.keyCode > 96 && e.keyCode < 106) ||
-            (e.keyCode > 48 && e.keyCode < 58))) {
+                (e.keyCode > 48 && e.keyCode < 58))) {
                 return false;
             }
+        }
+
+        input.oninput = function() {
+           if (this.value.length > 1) {
+               this.value = this.value.slice(0, 1)
+           }
         }
 
 
@@ -86,26 +90,85 @@ sodokuBoard.forEach(function (outer, i) {
     board.appendChild(outerSquare);
 })
 
+let lastInputBox;
+let filledBefore = false;
+
 // event listener for inputs
-document.addEventListener("input", function() {
+document.addEventListener("input", function () {
     let el = event.target;
+    lastInputBox = el;
+    checkInput(el);
+})
+
+// fix multiple button clicks causing issues with numStorage
+document.addEventListener("click", function () {
+    let el = event.target;
+    if (el.matches("input")) {
+        lastInputBox = el;
+    }
+    if (el.matches(".bttn") && lastInputBox) {
+        lastInputBox.value = el.value;
+        checkInput(lastInputBox);
+    }
+})
+
+
+// setting up available nums & restart button
+let numbers = document.getElementById("numbers");
+let restartGame = document.getElementById("restart");
+for (let i = 1; i <= 9; i++) {
+    let button = document.createElement("button");
+    button.classList += "green-button bttn";
+    button.value = i;
+    button.innerText = i;
+    numbers.appendChild(button);
+}
+let restart_button = document.createElement("button");
+restart_button.innerText = "Restart!";
+restart_button.addEventListener("click", function () {
+    window.location.reload();
+});
+restartGame.appendChild(restart_button);
+
+
+function checkInput(el) {
     let val = el.value;
+    let oldVal;
+    if (!el.getAttribute("data-val")) {
+        let old_val = document.createAttribute("data-val");
+        old_val.value = val;
+        el.setAttributeNode(old_val);
+    } else {
+        oldVal = el.getAttribute("data-val");
+        el.setAttribute("data-val", val);
+    }
+
+    if (!el.classList.contains("filled")) {
+        el.classList += "filled";
+    } else {
+        filledBefore = true;
+    }
+
     let i = el.getAttribute("data-i");
     let j = el.getAttribute("data-j");
 
-    if (val === 0) val = "";
+    if (val === 0 || val === "") {
+        val = "";
+        el.classList.remove("filled");
+    }
     if (val.length > 1) {
         val = val.slice(0, 1);
     }
 
     // checking if input is allowed
-   if (!validNumInput(i, j, val)) {
+    if (!validNumInput(i, j, val, filledBefore, oldVal)) {
         el.style.backgroundColor = "#ff8c7d";
-   } else {
+    } else {
         counter[+val]++;
         el.style.backgroundColor = "";
-   }
-})
+    }
+}
+
 
 // input validation functions
 function randomize(x) {
@@ -115,17 +178,31 @@ function randomize(x) {
     // if (count)
 }
 
-function validNumInput(i, j, input) {
+function validNumInput(i, j, input, filledBefore, oldVal) {
     // only valid if column, row, and box doesn't have num
-    const mapKey = i + "_" + j;
-    i = +i, j=+j, input = +input;
-    if (numStorage.col[checkCols(i, j)].includes(input) || numStorage.row[checkRows(i, j)].includes(input) || numStorage.box[checkBox(i, j)].includes(input)) {
-        return false;
+    i = +i, j = +j, input = +input;
+
+    if (filledBefore && oldVal) {
+        console.log("yop")
+        oldVal = +oldVal;
+        numStorage.col[checkCols(i, j)].filter(x => x !== oldVal)
+        numStorage.row[checkRows(i, j)].filter(x => x !== oldVal)
+        numStorage.box[checkBox(i, j)].filter(x => x !== oldVal)
+        return true;
     }
+
+    let colCheck = numStorage.col[checkCols(i, j)].includes(+input);
+    let rowCheck = numStorage.row[checkRows(i, j)].includes(+input);
+    let boxCheck = numStorage.box[checkBox(i, j)].includes(+input);
+
+
+    if (colCheck || rowCheck || boxCheck) return false;
 
     numStorage.col[checkCols(i, j)].push(input);
     numStorage.row[checkRows(i, j)].push(input);
     numStorage.box[checkBox(i, j)].push(input);
+
+    console.log(numStorage.col[checkCols(i, j)])
 
     return true;
 }
