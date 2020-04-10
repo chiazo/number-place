@@ -42,8 +42,8 @@ button,
 [type="submit"],
 button,
 .a-button {
-  background: #b4d0fa3a;
-  color: #3448ff;
+  background: #fff185;
+  color: #935203;
   border: 2px solid #b4d0fa3a;
 }
 
@@ -54,8 +54,8 @@ button,
 }
 
 .green-button {
-  background: #ebffde;
-  color: #039800;
+  background: #c5f7a4;
+  color: #025201;
   border: 2px solid #d7ffbd;
 }
 
@@ -96,6 +96,7 @@ html {
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.4;
   scroll-behavior: smooth;
+  
 }
 
 *,
@@ -113,12 +114,13 @@ head,
 body {
   text-align: justify;
   color: #444444;
-  background-color: #fdfdfd;
+  
 }
 
-body {
+body, html {
   margin: 0;
   box-sizing: border-box;
+  background-color: hsl(243, 100%, 88%);
   /* display: grid; */
   grid-template-columns: min-content 1fr;
 }
@@ -154,7 +156,7 @@ h1,
 h2,
 h3,
 h4 {
-  color: #444444;
+  color: #2e2e2e;
   line-height: 1.2;
   text-align: center;
 }

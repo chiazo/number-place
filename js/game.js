@@ -9,9 +9,9 @@ let rowDuplicates = new Array(9);
 let colDuplicates = new Array(9);
 let boxDuplicates = new Array(9);
 
-rowDuplicates = Array.from(rowDuplicates, function () { return []; })
-colDuplicates = Array.from(colDuplicates, function () { return []; })
-boxDuplicates = Array.from(boxDuplicates, function () { return []; })
+rowDuplicates = Array.from(rowDuplicates, function () { return new Set(); })
+colDuplicates = Array.from(colDuplicates, function () { return new Set(); })
+boxDuplicates = Array.from(boxDuplicates, function () { return new Set(); })
 
 let numStorage = {
     col: colDuplicates,
@@ -36,7 +36,9 @@ sodokuBoard.forEach(function (outer, i) {
     let outerSquare = document.createElement("div");
     // outerSquare.textContent = outer[0];
     outerSquare.classList += " outer-square";
-
+    outerSquare.addEventListener("click", function () {
+        outerSquare.classList += " outer-square-focus";
+    })
     outer.forEach(function (inner, j) {
         let innerSquare = document.createElement("div");
 
@@ -75,14 +77,6 @@ sodokuBoard.forEach(function (outer, i) {
                 return false;
             }
         }
-
-        input.oninput = function() {
-           if (this.value.length > 1) {
-               this.value = this.value.slice(0, 1)
-           }
-        }
-
-
         innerSquare.appendChild(input);
         innerSquare.classList += " inner-square";
         outerSquare.appendChild(innerSquare);
@@ -90,14 +84,29 @@ sodokuBoard.forEach(function (outer, i) {
     board.appendChild(outerSquare);
 })
 
-let lastInputBox;
-let filledBefore = false;
+randomize();
+console.log(numStorage)
+console.log(sodokuBoard)
 
 // event listener for inputs
 document.addEventListener("input", function () {
     let el = event.target;
-    lastInputBox = el;
-    checkInput(el);
+    let val = el.value;
+    let i = el.getAttribute("data-i");
+    let j = el.getAttribute("data-j");
+
+    if (val === 0) val = "";
+    if (val.length > 1) {
+        val = val.slice(0, 1);
+    }
+
+    // checking if input is allowed
+    if (!validNumInput(i, j, val)) {
+        el.style.backgroundColor = "#ff8c7d";
+    } else {
+        counter[+val]++;
+        el.style.backgroundColor = "";
+    }
 })
 
 // fix multiple button clicks causing issues with numStorage
@@ -112,6 +121,11 @@ document.addEventListener("click", function () {
     }
 })
 
+document.addEventListener("keydown", function (e) {
+    if (e.key = "Delete") {
+        deleteInput(e.target);
+    }
+})
 
 // setting up available nums & restart button
 let numbers = document.getElementById("numbers");
@@ -131,8 +145,43 @@ restart_button.addEventListener("click", function () {
 restartGame.appendChild(restart_button);
 
 
+// input validation functions
+function randomize(x) {
+    let count = 10000;
+    if (x) count = x;
+
+    for (let i = 0; i < count; i++) {
+        let randX, randY, randNum, min = 0, max = 8;
+        randX = min - 0.5 + Math.random() * (max - min + 1)
+        randY = min - 0.5 + Math.random() * (max - min + 1)
+        randNum = min - 0.5 + Math.random() * (max - min + 1)
+
+        randNum = Math.round(randNum) + 1;
+        randX = Math.round(randX);
+        randY = Math.round(randY);
+
+        while (sodokuBoard[randX][randY]) {
+            randX = min - 0.5 + Math.random() * (max - min + 1)
+            randY = min - 0.5 + Math.random() * (max - min + 1)
+
+            randX = Math.round(randX);
+            randY = Math.round(randY);
+        }
+
+        if (validNumInput(randX, randY, randNum)) {
+            let search_text = '[data-i="' + randX + '"][data-j="' + randY + '"]';
+            let square = board.querySelector(search_text);
+            square.style.backgroundColor = "#f2fff2"
+            square.value = randNum;
+            counter[randNum]++
+            square.setAttribute("readonly", true);
+        }
+    }
+}
+
 function checkInput(el) {
     let val = el.value;
+    
     let oldVal;
     if (!el.getAttribute("data-val")) {
         let old_val = document.createAttribute("data-val");
@@ -149,8 +198,8 @@ function checkInput(el) {
         filledBefore = true;
     }
 
-    let i = el.getAttribute("data-i");
-    let j = el.getAttribute("data-j");
+    let i = el.getAttribute("data-i") || x;
+    let j = el.getAttribute("data-j") || y;
 
     if (val === 0 || val === "") {
         val = "";
@@ -161,7 +210,7 @@ function checkInput(el) {
     }
 
     // checking if input is allowed
-    if (!validNumInput(i, j, val, filledBefore, oldVal)) {
+    if (!validNumInput(i, j, val)) {
         el.style.backgroundColor = "#ff8c7d";
     } else {
         counter[+val]++;
@@ -169,40 +218,29 @@ function checkInput(el) {
     }
 }
 
-
-// input validation functions
-function randomize(x) {
-    // let row = 0;
-    // let col = 0;
-    // let count = 10
-    // if (count)
+function deleteInput(el) {
+    let i = el.getAttribute("data-i");
+    let j = el.getAttribute("data-j");
+    numStorage.row[i].delete(el.value);
+    numStorage.col[j].delete(el.value);
+    numStorage.box[checkBox(i, j)].delete(el.value);
+    sodokuBoard[i][j] = 0;
+    el.style.backgroundColor = "";
+    el.value = "";
 }
 
-function validNumInput(i, j, input, filledBefore, oldVal) {
+function validNumInput(i, j, input) {
     // only valid if column, row, and box doesn't have num
     i = +i, j = +j, input = +input;
-
-    if (filledBefore && oldVal) {
-        console.log("yop")
-        oldVal = +oldVal;
-        numStorage.col[checkCols(i, j)].filter(x => x !== oldVal)
-        numStorage.row[checkRows(i, j)].filter(x => x !== oldVal)
-        numStorage.box[checkBox(i, j)].filter(x => x !== oldVal)
-        return true;
+    if (checkRowCol(i, j, input) || checkBoxSquare(i, j, input)) {
+        return false;
     }
 
-    let colCheck = numStorage.col[checkCols(i, j)].includes(+input);
-    let rowCheck = numStorage.row[checkRows(i, j)].includes(+input);
-    let boxCheck = numStorage.box[checkBox(i, j)].includes(+input);
-
-
-    if (colCheck || rowCheck || boxCheck) return false;
-
-    numStorage.col[checkCols(i, j)].push(input);
-    numStorage.row[checkRows(i, j)].push(input);
-    numStorage.box[checkBox(i, j)].push(input);
-
-    console.log(numStorage.col[checkCols(i, j)])
+    // console.log(checkRows(i, j) + " - " + checkCols(i, j) + " -> " + input)
+    numStorage.col[checkCols(i, j)].add(input)
+    numStorage.row[checkRows(i, j)].add(input)
+    numStorage.box[checkBox(i, j)].add(input)
+    sodokuBoard[checkRows(i, j)][checkCols(i, j)] = input
 
     return true;
 }
@@ -226,6 +264,16 @@ function fillRandomNumOfBoxs(input) {
     } else {
 
     }
+}
+
+function checkRowCol(i, j, input) {
+    return (numStorage.row[checkRows(i, j)].has(input) ||
+        numStorage.col[checkCols(i, j)].has(input))
+}
+
+function checkBoxSquare(i, j, input) {
+    return (numStorage.box[checkBox(i, j)].has(input) ||
+        sodokuBoard[checkRows(i, j)][checkCols(i, j)])
 }
 
 function checkCols(i, j) {
@@ -286,4 +334,3 @@ game.appendChild(board);
  * the value inserted was being duplicated because Array.fill
  * was using the same referenced array for each spot in the larger array
  */
-
