@@ -28,6 +28,7 @@ for (let i = 0; i < 9; i++) {
     }
 }
 
+
 const game = document.getElementById("game");
 const board = document.createElement("board");
 
@@ -85,8 +86,10 @@ sodokuBoard.forEach(function (outer, i) {
 })
 
 randomize();
-console.log(numStorage)
-console.log(sodokuBoard)
+// completeBoard();
+// console.log(sodokuBoard)
+// console.log(numStorage)
+
 
 // event listener for inputs
 document.addEventListener("input", function () {
@@ -105,7 +108,7 @@ document.addEventListener("input", function () {
         el.style.backgroundColor = "#ff8c7d";
     } else {
         counter[+val]++;
-        el.style.backgroundColor = "";
+        el.style.backgroundColor = "#fc8803";
     }
 })
 
@@ -144,44 +147,90 @@ restart_button.addEventListener("click", function () {
 });
 restartGame.appendChild(restart_button);
 
+function findNewNum(x, y, square, arr) {
+    if (arr.length === 0) return 0;
+    for (let i = 0; i < arr.length; i++) {
+        if (validNumInput(x, y, arr[i])) {
+            return arr[i];
+        } else {
+            deleteInput(square)
+        }
+    }
+    return 0;
+}
+
+function fillSpot(i, j, square, randNum) {
+    console.log(checkRows(i, j) + " - " + checkCols(i, j) + " -> " + randNum)
+    square.style.backgroundColor = "#f2fff2"
+    square.value = randNum;
+    counter[randNum]++
+    square.setAttribute("readonly", true);
+}
 
 // input validation functions
 function randomize(x) {
     let count = 10000;
     if (x) count = x;
 
-    for (let i = 0; i < count; i++) {
-        let randX, randY, randNum, min = 0, max = 8;
-        randX = min - 0.5 + Math.random() * (max - min + 1)
-        randY = min - 0.5 + Math.random() * (max - min + 1)
-        randNum = min - 0.5 + Math.random() * (max - min + 1)
+    for (let i = 0; i < 9; i++) {
+        let availableNums = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        
+        for (let j = 0; j < 9; j++) {
 
-        randNum = Math.round(randNum) + 1;
-        randX = Math.round(randX);
-        randY = Math.round(randY);
+            let randNum, randIdx, min = 0, max = availableNums.length - 1;
+            randIdx = min - 0.5 + Math.random() * (max - min + 1)
+            randIdx = Math.round(randIdx);
+            randNum = availableNums[randIdx];
 
-        while (sodokuBoard[randX][randY]) {
-            randX = min - 0.5 + Math.random() * (max - min + 1)
-            randY = min - 0.5 + Math.random() * (max - min + 1)
-
-            randX = Math.round(randX);
-            randY = Math.round(randY);
-        }
-
-        if (validNumInput(randX, randY, randNum)) {
-            let search_text = '[data-i="' + randX + '"][data-j="' + randY + '"]';
+            let search_text = '[data-i="' + i + '"][data-j="' + j + '"]';
             let square = board.querySelector(search_text);
-            square.style.backgroundColor = "#f2fff2"
-            square.value = randNum;
-            counter[randNum]++
-            square.setAttribute("readonly", true);
+            
+
+            if (validNumInput(i, j, randNum)) {
+                fillSpot(i, j, square, randNum)
+                availableNums = availableNums.filter(x => x !== randNum)
+                console.log(availableNums)
+            } else {
+                refillArray(i, j, randNum, availableNums)
+                let newNum = findNewNum(i, j, square, availableNums);
+                if (newNum === 0) {
+                    console.log("yikez")
+                } else {
+                    fillSpot(i, j, square, newNum)
+                }
+            }
+
         }
+    }
+    // console.log(numStorage)
+    // console.log(sodokuBoard)
+}
+
+function refillArray(i, j, input, arr) {
+    arr = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    arr = arr.filter(x => !checkExistence(i, j, input))
+    let currRow = numStorage.row[i];
+    for (let q = 0; q < currRow.length; q++) {
+        arr = arr.filter(x => x !== currRow[q])
+    }
+}
+
+// in the first 3 rows
+// if it's in the box -> nope
+// if it's in the row -> 
+// last condition -> check column
+
+function checkExistence(i, j, input) {
+    if (checkRowBox(i, j, input) || checkColSquare(i, j, input)) {
+        return input;
+    } else {
+        return 0;
     }
 }
 
 function checkInput(el) {
     let val = el.value;
-    
+
     let oldVal;
     if (!el.getAttribute("data-val")) {
         let old_val = document.createAttribute("data-val");
@@ -232,14 +281,20 @@ function deleteInput(el) {
 function validNumInput(i, j, input) {
     // only valid if column, row, and box doesn't have num
     i = +i, j = +j, input = +input;
-    if (checkRowCol(i, j, input) || checkBoxSquare(i, j, input)) {
+    if (checkExistence(i, j, input)) {
         return false;
     }
+    let col = numStorage.col[checkCols(i, j)];
+    let row = numStorage.row[checkRows(i, j)];
+    let box = numStorage.box[checkBox(i, j)];
 
+    let colSize = col.size;
+    let rowSize = row.size;
+    let boxSize = box.size;
     // console.log(checkRows(i, j) + " - " + checkCols(i, j) + " -> " + input)
-    numStorage.col[checkCols(i, j)].add(input)
-    numStorage.row[checkRows(i, j)].add(input)
-    numStorage.box[checkBox(i, j)].add(input)
+    col.add(input)
+    row.add(input)
+    box.add(input)
     sodokuBoard[checkRows(i, j)][checkCols(i, j)] = input
 
     return true;
@@ -266,14 +321,13 @@ function fillRandomNumOfBoxs(input) {
     }
 }
 
-function checkRowCol(i, j, input) {
+function checkRowBox(i, j, input) {
     return (numStorage.row[checkRows(i, j)].has(input) ||
-        numStorage.col[checkCols(i, j)].has(input))
+        numStorage.box[checkBox(i, j)].has(input))
 }
 
-function checkBoxSquare(i, j, input) {
-    return (numStorage.box[checkBox(i, j)].has(input) ||
-        sodokuBoard[checkRows(i, j)][checkCols(i, j)])
+function checkColSquare(i, j, input) {
+    return (numStorage.col[checkCols(i, j)].has(input))
 }
 
 function checkCols(i, j) {
