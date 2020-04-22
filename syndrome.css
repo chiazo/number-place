@@ -249,21 +249,21 @@ h4 {
   height: calc(30% - 2rem); */
   position: relative;
 }
-
 .outer-square {
-  border: 2px solid rgb(128, 128, 18);
-  width: 32.9%;
-  flex: 0 0 33%;
+  /* border: 1px solid rgb(128, 128, 18); */
+  /* width: 32.9%; */
+  width: 100%;
+  /* flex: 0 0 33%; */
   margin: 1px;
   float: left;
 }
 
 .inner-square {
-  flex: 0 0 32%;
+  /* flex: 0 0 32%; */
   border: 1px solid rgb(43, 43, 43);
   flex-wrap: wrap;
   float: left;
-  width: 33.33%;
+  width: 11.11%;
   height: 40px;
   margin: auto;
   padding: 2px;
@@ -271,10 +271,27 @@ h4 {
 }
 
 .inner-square:nth-child(3n) {
-  /* background-color: #900098; */
+  border-right: 3px solid rgb(63, 63, 63);
 }
 
-.game > input[type=number], input {
+.outer-square {
+  border-left: 3px solid rgb(63, 63, 63);
+}
+
+.outer-square:first-child {
+  border-top: 3px solid rgb(63, 63, 63);
+}
+
+.outer-square:nth-child(3n) {
+  border-bottom: 3px solid rgb(63, 63, 63);
+} 
+
+input {
+  width: 100%;
+  height: 100%;
+}
+
+.game > input[type=number], input, .cell {
   color: transparent;
   text-shadow: 0 0 0 black;
   margin: 0rem;
@@ -289,7 +306,7 @@ h4 {
   text-align: center;
 }
 
-.game > input[type=number]:focus, input:focus {
+.game > input[type=number]:focus, input:focus, .cell:focus {
   /* outline: none; */
   background: rgb(213, 213, 213);
 }

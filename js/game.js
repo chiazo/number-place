@@ -31,6 +31,7 @@ for (let i = 0; i < 9; i++) {
 
 const game = document.getElementById("game");
 const board = document.createElement("board");
+let table = document.createElement("table")
 
 // add divs to each inner and outer square
 sodokuBoard.forEach(function (outer, i) {
@@ -40,7 +41,9 @@ sodokuBoard.forEach(function (outer, i) {
     outerSquare.addEventListener("click", function () {
         outerSquare.classList += " outer-square-focus";
     })
+    table.insertRow();
     outer.forEach(function (inner, j) {
+        let cell = table.rows[table.rows.length - 1].insertCell();
         let innerSquare = document.createElement("div");
 
         let input = document.createElement("input");
@@ -78,11 +81,15 @@ sodokuBoard.forEach(function (outer, i) {
                 return false;
             }
         }
-        innerSquare.appendChild(input);
+
+        cell.appendChild(input);
+        cell.classList += " cell inner-square";
+        innerSquare.appendChild(cell);
         innerSquare.classList += " inner-square";
         outerSquare.appendChild(innerSquare);
     })
     board.appendChild(outerSquare);
+    board.appendChild(table);
 })
 
 randomize();
@@ -160,7 +167,7 @@ function findNewNum(x, y, square, arr) {
 }
 
 function fillSpot(i, j, square, randNum) {
-    console.log(checkRows(i, j) + " - " + checkCols(i, j) + " -> " + randNum)
+    // console.log(checkRows(i, j) + " - " + checkCols(i, j) + " -> " + randNum)
     square.style.backgroundColor = "#f2fff2"
     square.value = randNum;
     counter[randNum]++
@@ -171,10 +178,13 @@ function fillSpot(i, j, square, randNum) {
 function randomize(x) {
     let count = 10000;
     if (x) count = x;
+    let previousSpot = [0, 0];
 
+    outerloop:
     for (let i = 0; i < 9; i++) {
         let availableNums = [1, 2, 3, 4, 5, 6, 7, 8, 9]
         
+        innerloop:
         for (let j = 0; j < 9; j++) {
 
             let randNum, randIdx, min = 0, max = availableNums.length - 1;
@@ -194,17 +204,32 @@ function randomize(x) {
                 refillArray(i, j, randNum, availableNums)
                 let newNum = findNewNum(i, j, square, availableNums);
                 if (newNum === 0) {
-                    console.log("yikez")
+                    console.log("yikez");
+                    break outerloop;
                 } else {
                     fillSpot(i, j, square, newNum)
                 }
             }
 
+            previousSpot = [i, j];
+
         }
     }
-    // console.log(numStorage)
-    // console.log(sodokuBoard)
 }
+
+function goBack(i, j, randNum) {
+    // base case
+    if (i === 0 && j === 0 || i === 8 && j === 8) {
+
+    }
+    // recursive case
+    
+}
+
+function solvePuzzle() {
+
+}
+
 
 function refillArray(i, j, input, arr) {
     arr = [1, 2, 3, 4, 5, 6, 7, 8, 9]
@@ -284,8 +309,8 @@ function validNumInput(i, j, input) {
     if (checkExistence(i, j, input)) {
         return false;
     }
-    let col = numStorage.col[checkCols(i, j)];
-    let row = numStorage.row[checkRows(i, j)];
+    let col = numStorage.col[j];
+    let row = numStorage.row[i];
     let box = numStorage.box[checkBox(i, j)];
 
     let colSize = col.size;
@@ -295,7 +320,7 @@ function validNumInput(i, j, input) {
     col.add(input)
     row.add(input)
     box.add(input)
-    sodokuBoard[checkRows(i, j)][checkCols(i, j)] = input
+    sodokuBoard[i][j] = input
 
     return true;
 }
@@ -322,51 +347,53 @@ function fillRandomNumOfBoxs(input) {
 }
 
 function checkRowBox(i, j, input) {
-    return (numStorage.row[checkRows(i, j)].has(input) ||
+    return (numStorage.row[i].has(input) ||
         numStorage.box[checkBox(i, j)].has(input))
 }
 
 function checkColSquare(i, j, input) {
-    return (numStorage.col[checkCols(i, j)].has(input))
+    return (numStorage.col[j].has(input))
 }
 
-function checkCols(i, j) {
-    i = +i, j = +j;
-    if (i === 0 || i === 3 || i === 6) {
-        if (j === 0 || j === 3 || j === 6) return 0;
-        if (j === 1 || j === 4 || j === 7) return 1;
-        return 2;
-    } else if (i === 1 || i === 4 || i === 7) {
-        if (j === 0 || j === 3 || j === 6) return 3;
-        if (j === 1 || j === 4 || j === 7) return 4;
-        return 5;
-    } else {
-        if (j === 0 || j === 3 || j === 6) return 6;
-        if (j === 1 || j === 4 || j === 7) return 7;
-        return 8;
-    }
-}
+// function checkCols(i, j) {
+//     i = +i, j = +j;
+//     if (i === 0 || i === 3 || i === 6) {
+//         if (j === 0 || j === 3 || j === 6) return 0;
+//         if (j === 1 || j === 4 || j === 7) return 1;
+//         return 2;
+//     } else if (i === 1 || i === 4 || i === 7) {
+//         if (j === 0 || j === 3 || j === 6) return 3;
+//         if (j === 1 || j === 4 || j === 7) return 4;
+//         return 5;
+//     } else {
+//         if (j === 0 || j === 3 || j === 6) return 6;
+//         if (j === 1 || j === 4 || j === 7) return 7;
+//         return 8;
+//     }
+// }
 
-function checkRows(i, j) {
-    i = +i, j = +j;
-    if (i === 0 || i === 1 || i === 2) {
-        if (j === 0 || j === 1 || j === 2) return 0;
-        if (j === 3 || j === 4 || j === 5) return 1;
-        return 2;
-    } else if (i === 3 || i === 4 || i === 5) {
-        if (j === 0 || j === 1 || j === 2) return 3;
-        if (j === 3 || j === 4 || j === 5) return 4;
-        return 5;
-    } else {
-        if (j === 0 || j === 1 || j === 2) return 6;
-        if (j === 3 || j === 4 || j === 5) return 7;
-        return 8;
-    }
-}
+// function checkRows(i, j) {
+//     i = +i, j = +j;
+//     if (i === 0 || i === 1 || i === 2) {
+//         if (j === 0 || j === 1 || j === 2) return 0;
+//         if (j === 3 || j === 4 || j === 5) return 1;
+//         return 2;
+//     } else if (i === 3 || i === 4 || i === 5) {
+//         if (j === 0 || j === 1 || j === 2) return 3;
+//         if (j === 3 || j === 4 || j === 5) return 4;
+//         return 5;
+//     } else {
+//         if (j === 0 || j === 1 || j === 2) return 6;
+//         if (j === 3 || j === 4 || j === 5) return 7;
+//         return 8;
+//     }
+// }
 
 function checkBox(i, j) {
-    const col = checkCols(i, j)
-    const row = checkRows(i, j)
+    // const col = checkCols(i, j)
+    // const row = checkRows(i, j)
+    const col = j;
+    const row = i;
     if (row < 3) {
         if (col < 3) return 0;
         if (col < 6) return 1;
