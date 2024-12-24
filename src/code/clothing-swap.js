@@ -27,8 +27,17 @@ export class ClothingSwap {
     // the entire catalogue
     while (idx < totalItems && idx < this.limitPerPerson * this.people.length) {
       let person = swapOrder[idx % this.people.length];
+      console.log("debug", this.itemsList);
+      console.log("debug", person);
       let availableItems = this.itemsList.filter(
-        (i) => i.owner.name != person.name
+        (i) =>
+          i.owner !== person.name &&
+          !person.acquired.map((a) => a.type.name).includes(i.type.name) &&
+          person.desiredSwaps.map((a) => a.type.name).includes(i.type.name)
+      );
+      console.log(
+        `avail for ${person.name}, size ${person.size}`,
+        availableItems
       );
       let hasOptions = person.desiredSwaps > 0;
       let randomItem;
@@ -42,15 +51,16 @@ export class ClothingSwap {
         randomItem = availableItems[itemIdx];
       }
 
-      person.acquired[person.acquired.length] = randomItem;
+      if (randomItem) {
+        person.acquired[person.acquired.length] = randomItem;
 
-      // remove this random item from the associated global list
-      let idxToRemove = this.itemsList.findIndex(
-        (i) =>
-          i.owner.name == randomItem.owner.name &&
-          i.type.name == randomItem.type.name
-      );
-      this.itemsList.splice(idxToRemove, 1);
+        // remove this random item from the associated global list
+        let idxToRemove = this.itemsList.findIndex(
+          (i) =>
+            i.owner === randomItem.owner && i.type.name === randomItem.type.name
+        );
+        this.itemsList.splice(idxToRemove, 1);
+      }
 
       idx += 1;
     }
@@ -76,10 +86,9 @@ export class ClothingSwap {
         p.availabilityCount /
         (this.inclusivityMap[p.name] || 0 + p.swaps.length);
     });
+
     let sorted = Object.keys(ranking).sort((a, b) => ranking[a] - ranking[b]);
-    // let undesiredItems =
-    //   Object.values(this.items).reduce((prev, curr) => prev + curr, 0) -
-    //   Object.values(this.inclusivityMap).reduce((prev, curr) => prev + curr, 0);
+
     this.people.forEach((p) => {
       p.ranking = sorted.indexOf(p.name) + 1;
     });
@@ -88,7 +97,7 @@ export class ClothingSwap {
   checkAvailability(person) {
     // check if there are clothes in this person's size they desire
     let sizes = this.itemsList.filter(
-      (i) => person.size <= i.size && i.owner != person.name
+      (i) => person.size <= i.size && i.owner !== person.name
     );
     let desired = sizes.filter((s) => person.wants.includes(s.type));
     // keep track of who brought clothes that are desirable to others

@@ -1,0 +1,342 @@
+/* feel free to go on google fonts and change this to another font! */
+@import url('https://fonts.googleapis.com/css2?family=Agu+Display&display=swap');
+/* == UI COMPONENTS == */
+/* buttons */
+[type="button"],
+[type="submit"],
+button,
+.a-button,
+.yellow-button,
+.transp-button,
+.green-button {
+  display: inline-block;
+  text-decoration: none;
+  font-size: 1rem;
+  font-family: "Agu Display", serif;
+  padding: 0.6rem 1.2rem;
+  vertical-align: middle;
+  text-align: center;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  line-height: 1;
+  border-radius: 10px;
+  margin-bottom: 3%;
+  margin-top: 10px;
+}
+
+[type="button"]:hover,
+[type="submit"]:hover,
+button:hover {
+  background-color: white;
+}
+
+.buttons {
+  text-align: justify;
+}
+
+/* == HTML == */
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+  box-sizing: border-box;
+}
+
+html {
+  box-sizing: border-box;
+  font-family: "Space Mono", monospace;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.4;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  color: #eee;
+  scroll-behavior: smooth;
+  font-size: 18px;
+  background-color: #db5c40;
+  height: 500px; /* You must set a specified height */
+  background-position: center; /* Center the image */
+  background-repeat: repeat; /* Do not repeat the image */
+  background-size: cover;
+}
+
+div {
+  margin-bottom: 1rem;
+}
+
+body {
+  box-sizing: border-box;
+  min-height: 100%;
+}
+
+a {
+  font-weight: 400;
+  font-size: 1rem;
+  text-decoration: none;
+}
+
+a:hover {
+  background-color: #edf1fea9;
+  box-shadow: 3px 2px 3px #285aff9e;
+  padding: .4rem;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  color: #fffbb2;
+  text-shadow: 4px 4px 16px #B2C4FF;
+  font-family: "Agu Display", serif;
+  letter-spacing: .3rem;
+  text-align: center;
+  margin-top: 2rem;
+  line-height: 1.2;
+}
+
+h1 {
+  font-size: 4rem;
+  color: #fffbb2;
+  text-shadow: 2px 2px 2px #456ffc;
+  margin: 1rem 1rem 1rem 0;
+  background-color: #285aff4d;
+}
+
+h4 {
+  padding: 20px;
+}
+
+.content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.wrapper,
+.container {
+  max-width: 1200px;
+  width: 100%;
+  padding-left: 10px;
+  padding-right: 10px;
+  margin: 0 0;
+  transition: all 0.3s ease;
+}
+
+.container::before,
+.container::after,
+.wrapper::before,
+.wrapper::after {
+  display: table;
+  content: "";
+  clear: both;
+  width: 100%;
+}
+
+.main {
+  margin: 2rem;
+}
+
+.masthead {
+  margin: 3rem 0rem 1rem 0rem;
+  padding: 1rem;
+  min-width: 100%;
+}
+
+.content {
+  padding-bottom: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+.music {
+  margin-left: 3rem;
+}
+
+.footer {
+  clear: both;
+  position: relative;
+  font-family: "Agu Display", serif;
+  height: 200px;
+  color: #eee;
+  background-image: linear-gradient(#6688fabb);
+  /* border-bottom: 3px solid #6688fabb; */
+  text-shadow: 1px 3px 4px #44410d;
+  box-shadow: 15px 5px -5px #fffbb2;
+  height: 2.5rem;
+  margin-top: 1rem;
+  padding: .3rem;
+  text-align: center;
+}
+
+.nav-item {
+  list-style: none;
+}
+
+.nav-links {
+  display: flex;
+  justify-content: center;
+  /* background-color: #6688fabb; */
+  /* border-bottom: 3px solid #6688fabb; */
+  /* box-shadow: 5px 5px 10px #456ffc; */
+  text-shadow: 1px 3px 4px #456ffc;
+  align-items: center;
+  gap: 1rem;
+}
+
+.nav-links a {
+  margin: 0 1rem;
+  color: #eee;
+}
+
+.hof {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+iframe {
+  border: 3px solid #6688fabb;
+  box-shadow: 5px 5px 10px #456ffc;
+}
+
+.socials {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+
+.social-icon {
+  border-radius: 50%;
+  border: 2px solid #0840f686;
+  box-shadow: 2px 2px 5px #456ffc;
+}
+
+.social-svg-icon {
+  fill: #eee !important;
+}
+.social-svg-mask {
+  fill: #87a2fa !important;
+}
+
+.me {
+  width: 18rem;
+  height: 24rem;
+  /* border-left: 3px solid #6688fabb; */
+  border: 3px solid #6688fabb;
+  box-shadow: 5px 5px 10px #456ffc;
+}
+
+.hof>div {
+  margin: 3rem;
+  padding: 2rem;
+  border: 1px solid #285aff;
+}
+
+.hof img {
+  border: 6px double #6689fa;
+}
+
+.hof h4 {
+  margin-bottom: 0;
+}
+
+blockquote {
+  color: #eee;
+  background-color: #6689fa;
+  padding: 1rem;
+}
+
+/* == MOBILE SPECIFIC ADJUSTMENTS == */
+@media (max-width: 700px) {
+  html {
+    font-size: 16px;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  h1 {
+    font-size: 3rem;
+    margin: 0.5rem 0;
+  }
+
+  h2, h3, h4 {
+    font-size: 1.5rem;
+  }
+
+  .buttons {
+    text-align: center;
+  }
+
+  .content {
+    flex-direction: column;
+    padding: 1rem 0;
+  }
+
+  .wrapper,
+  .container {
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+
+  .main {
+    margin: 1rem;
+  }
+
+  .masthead {
+    margin: 1rem 0;
+  }
+
+  .hof {
+    display: block;
+  }
+
+      /* Center the content of the .music div */
+  .music {
+    display: flex;
+    justify-content: center; /* Horizontally center the iframe */
+    align-items: center;     /* Vertically center the iframe */
+    flex-direction: column;  /* Ensure the iframe is stacked properly if there's more content */
+    margin: 0 auto;
+  }
+
+  /* Ensure iframe takes up full width */
+  iframe {
+    margin-top: 1rem;
+    width: 100%;
+  }
+    /* Social icons in a 2-column grid */
+    .socials {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr); /* 3 per row */
+      justify-content: center;
+      align-items: center;
+    }
+  
+    .social-icon {
+      width: 50px;
+      height: 50px;
+      margin: auto;
+    }
+
+  .me {
+    /* width: 50%;
+    height: 200px;              /* Set a fixed height */
+    /* object-fit: cover;          Ensure the image covers the area without distortion */
+    /* object-position: bottom;   */ 
+    display: none;
+  
+  }
+
+  @media (max-width: 600px) { 
+
+  .me {
+    /* width: 70%;
+    height: 200px;              /* Set a fixed height */
+    /* object-fit: cover;          Ensure the image covers the area without distortion */
+    /* object-position: bottom;   */
+    display: none;
+  }
+  }
+}
