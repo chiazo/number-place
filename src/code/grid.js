@@ -21,6 +21,35 @@ export class Grid {
     this.tiles = Grid.setTiles(this);
   }
 
+  updateTile(row, col, new_value) {
+    const tile = this.tiles.find((t) => t.row == row && t.column == col);
+    if (tile == undefined) {
+      return;
+    }
+    const original_value = tile.value;
+    if (this.isValidSelection(new_value)) {
+      tile.update(new_value);
+      console.log(
+        `[${row}, ${col}] - old_val: ${original_value}, new_value: ${new_value}`
+      );
+    }
+  }
+
+  isValidSelection(new_value) {
+    if (new_value < 1 || new_value > 9) {
+      return false;
+    }
+    return !this.tiles.some((t) => t.value == new_value);
+  }
+
+  getTilesInRow(row) {
+    return this.tiles.filter((t) => t.row == row);
+  }
+
+  getTilesInColumn(col) {
+    return this.tiles.filter((t) => t.column == col);
+  }
+
   static getStartPosition(position) {
     let row = 0;
     let column = 0;
@@ -52,7 +81,7 @@ export class Grid {
         tiles.push(new Tile(row + 2, col + (i % 3)));
       }
     }
-    console.log(tiles);
+    return tiles;
   }
 }
 
