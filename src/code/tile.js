@@ -23,9 +23,10 @@ export class Tile {
     var equal_columns = col == this.column;
     var equal_rows = row == this.row;
 
-    if (value !== this.value) {
-      return equal_columns && equal_rows;
+    if (!equal_columns && !equal_rows) {
+      return false;
     }
-    return equal_columns || equal_rows;
+
+    return this.value == value;
   }
 }

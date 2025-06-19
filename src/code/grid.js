@@ -12,6 +12,11 @@ export const Position = {
   BOTTOM_RIGHT: "BOTTOM_RIGHT",
 };
 
+export const Status = {
+  VALID_MOVE: "VALID_MOVE",
+  INVALID_MOVE: "INVALID_MOVE",
+};
+
 export class Grid {
   position;
   tiles;
@@ -23,23 +28,34 @@ export class Grid {
 
   updateTile(row, col, new_value) {
     const tile = this.tiles.find((t) => t.row == row && t.column == col);
-    if (tile == undefined) {
-      return;
+    if (tile == undefined || !this.isValidSelection(new_value)) {
+      return Status.INVALID_MOVE;
     }
     const original_value = tile.value;
-    if (this.isValidSelection(new_value)) {
-      tile.update(new_value);
-      console.log(
-        `[${row}, ${col}] - old_val: ${original_value}, new_value: ${new_value}`
-      );
-    }
+
+    tile.update(new_value);
+    console.log(`[${row}, ${col}] = ${new_value} (old_val: ${original_value})`);
+    return Status.VALID_MOVE;
   }
 
   isValidSelection(new_value) {
     if (new_value < 1 || new_value > 9) {
       return false;
     }
-    return !this.tiles.some((t) => t.value == new_value);
+    const tileCollision = this.tiles.find((t) => t.value == new_value);
+    const isValid = tileCollision == undefined;
+    if (!isValid) {
+      console.log(
+        `${this.position.toLowerCase()} grid collison! [${tileCollision.row}, ${
+          tileCollision.column
+        }] = ${new_value}`
+      );
+    }
+    return isValid;
+  }
+
+  hasTile(row, col) {
+    return this.tiles.some((t) => t.row == row && t.column == col);
   }
 
   getTilesInRow(row) {
@@ -84,13 +100,3 @@ export class Grid {
     return tiles;
   }
 }
-
-// let grid_one = new Grid(Position.TOP_LEFT);
-// let grid_two = new Grid(Position.TOP_MIDDLE);
-// let grid_three = new Grid(Position.TOP_RIGHT);
-// let grid_four = new Grid(Position.CENTER_LEFT);
-// let grid_five = new Grid(Position.CENTER_MIDDLE);
-// let grid_six = new Grid(Position.CENTER_RIGHT);
-// let grid_seven = new Grid(Position.BOTTOM_LEFT);
-// let grid_eight = new Grid(Position.BOTTOM_MIDDLE);
-// let grid_nine = new Grid(Position.BOTTOM_RIGHT);
