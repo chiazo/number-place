@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/number-place/static/css/main.0f8377f7.css",
+    "main.js": "/number-place/static/js/main.fd0632f0.js",
+    "index.html": "/number-place/index.html",
+    "main.0f8377f7.css.map": "/number-place/static/css/main.0f8377f7.css.map",
+    "main.fd0632f0.js.map": "/number-place/static/js/main.fd0632f0.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.0f8377f7.css",
+    "static/js/main.fd0632f0.js"
+  ]
+}

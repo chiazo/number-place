@@ -1,26 +1,51 @@
 {
   "name": "number-place",
-  "version": "1.0.0",
-  "description": "a sodoku game",
-  "main": "js/game.js",
+  "version": "0.1.0",
+  "private": false,
+  "type": "module",
+  "homepage": "https://chiazo.github.io/number-place",
+  "dependencies": {
+    "@testing-library/jest-dom": "^5.11.4",
+    "@testing-library/react": "^11.1.0",
+    "@testing-library/user-event": "^12.1.10",
+    "bootstrap": "^5.3.3",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "react-markdown": "^5.0.3",
+    "react-router-dom": "^5.2.0",
+    "react-scripts": "^5.0.1",
+    "react-social-icons": "^6.18.0",
+    "react-type-animation": "^3.2.0",
+    "web-vitals": "^0.2.4"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "lite": "lite-server",
-    "start": "concurrently \"npm run lite\" "
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/chiazo/number-place.git"
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
   },
-  "author": "Chiazo",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/chiazo/number-place/issues"
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   },
-  "homepage": "https://github.com/chiazo/number-place#readme",
-  "dependencies": {},
   "devDependencies": {
-    "concurrently": "^5.1.0",
-    "lite-server": "^2.5.4"
+    "ajv": "^7.2.4",
+    "gh-pages": "^6.1.1"
   }
 }
