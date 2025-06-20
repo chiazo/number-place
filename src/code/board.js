@@ -1,8 +1,10 @@
 import { Grid, Position, Status } from "./grid.js";
 
 export class Board {
+  static valid_numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
   grids;
   tilesFilled;
+  lastFilledTile;
   constructor() {
     this.resetBoard();
     this.tilesFilled = 0;
@@ -14,19 +16,48 @@ export class Board {
       return Status.INVALID_MOVE;
     }
 
-    var result = grid.updateTile(row, col, new_value);
+    var [result, tile] = grid.updateTile(row, col, new_value);
     if (result == Status.VALID_MOVE) {
-      this.tilesFilled += 1;
+      this.lastFilledTile = tile;
     }
     return result;
   }
 
-  completed() {
-    console.log("tiles filled", this.tilesFilled);
-    return this.tilesFilled == 81;
+  nextEmptyTile() {
+    if (this.completed()) return;
+
+    for (const grid of this.grids) {
+      const emptyTile = grid.tiles.find((t) => t.value == 0);
+      if (emptyTile) return emptyTile;
+    }
   }
 
-  isValidSelection(row, col, new_value) {
+  updateLastFilledTile(tile) {
+    this.lastFilledTile = tile;
+  }
+
+  clearLastFilledTile() {
+    if (this.lastFilledTile !== undefined) {
+      this.lastFilledTile.reset();
+    }
+  }
+
+  completed(log = false) {
+    var data = this.visual(false);
+    var count = data.reduce(
+      (count, curr) => count + curr.filter((value) => value !== 0).length,
+      0
+    );
+    if (log) {
+      console.log("tiles filled", count);
+    }
+    this.tilesFilled = count;
+    return (
+      count == 81 || !this.grids.some((g) => g.tiles.some((t) => t.value == 0))
+    );
+  }
+
+  isValidSelection(row, col, new_value, log = false) {
     const row_collision = this.grids
       .reduce((tiles, g) => tiles.concat(g.getTilesInRow(row)), [])
       .some((t) => t.collision(row, col, new_value));
@@ -34,7 +65,7 @@ export class Board {
       .reduce((tiles, g) => tiles.concat(g.getTilesInColumn(col)), [])
       .some((t) => t.collision(row, col, new_value));
     var isValid = !row_collision && !col_collision;
-    if (!isValid) {
+    if (!isValid && log) {
       console.log(
         `${
           row_collision ? "row" : "col"
@@ -44,7 +75,7 @@ export class Board {
     return isValid;
   }
 
-  visual() {
+  visual(log = true) {
     var data = [];
     for (let i = 0; i < 9; i++) {
       data.push(
@@ -54,7 +85,10 @@ export class Board {
         )
       );
     }
-    console.table(data);
+    if (log) {
+      console.table(data);
+    }
+    return data;
   }
 
   resetBoard() {
@@ -71,16 +105,3 @@ export class Board {
     ];
   }
 }
-
-var board = new Board();
-board.setTile(0, 0, 2);
-board.setTile(1, 1, 9);
-board.setTile(0, 1, 8);
-board.setTile(1, 0, 4);
-board.setTile(0, 2, 5);
-board.setTile(1, 2, 3);
-board.setTile(2, 0, 1);
-board.setTile(2, 1, 6);
-board.setTile(2, 2, 7);
-board.visual();
-board.completed();

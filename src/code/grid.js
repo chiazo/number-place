@@ -15,6 +15,8 @@ export const Position = {
 export const Status = {
   VALID_MOVE: "VALID_MOVE",
   INVALID_MOVE: "INVALID_MOVE",
+  BOARD_COMPLETE: "BOARD_COMPLETE",
+  ALL_MOVES_EXHAUSTED: "ALL_MOVES_EXHAUSTED",
 };
 
 export class Grid {
@@ -26,7 +28,7 @@ export class Grid {
     this.tiles = Grid.setTiles(this);
   }
 
-  updateTile(row, col, new_value) {
+  updateTile(row, col, new_value, log = false) {
     const tile = this.tiles.find((t) => t.row == row && t.column == col);
     if (tile == undefined || !this.isValidSelection(new_value)) {
       return Status.INVALID_MOVE;
@@ -34,17 +36,21 @@ export class Grid {
     const original_value = tile.value;
 
     tile.update(new_value);
-    console.log(`[${row}, ${col}] = ${new_value} (old_val: ${original_value})`);
-    return Status.VALID_MOVE;
+    if (log) {
+      console.log(
+        `[${row}, ${col}] = ${new_value} (old_val: ${original_value})`
+      );
+    }
+    return [Status.VALID_MOVE, tile];
   }
 
-  isValidSelection(new_value) {
+  isValidSelection(new_value, log = false) {
     if (new_value < 1 || new_value > 9) {
       return false;
     }
     const tileCollision = this.tiles.find((t) => t.value == new_value);
     const isValid = tileCollision == undefined;
-    if (!isValid) {
+    if (!isValid && log) {
       console.log(
         `${this.position.toLowerCase()} grid collison! [${tileCollision.row}, ${
           tileCollision.column

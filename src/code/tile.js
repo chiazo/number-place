@@ -19,6 +19,10 @@ export class Tile {
     }
   }
 
+  reset() {
+    this.value = 0;
+  }
+
   collision(row, col, value) {
     var equal_columns = col == this.column;
     var equal_rows = row == this.row;
