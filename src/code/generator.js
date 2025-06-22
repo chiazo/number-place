@@ -11,10 +11,9 @@ export class Generator {
     while (this.complete_boards.length == 0) {
       const board = new Board();
       const { status } = this.recursiveSolveBoard(board, board.nextEmptyTile());
-      console.log("status", status);
       if (status == Status.BOARD_COMPLETE) {
         this.complete_boards.push(board);
-        board.visual();
+        return board;
       }
     }
   }
@@ -51,4 +50,3 @@ export class Generator {
 
 var generator = new Generator();
 generator.populateBoard();
-// console.log(generator.complete_boards);

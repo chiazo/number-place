@@ -17,6 +17,8 @@ export const Status = {
   INVALID_MOVE: "INVALID_MOVE",
   BOARD_COMPLETE: "BOARD_COMPLETE",
   ALL_MOVES_EXHAUSTED: "ALL_MOVES_EXHAUSTED",
+  TOO_MANY_SOLUTIONS: "TOO_MANY_SOLUTIONS",
+  SOLUTION_FOUND: "SOLUTION_FOUND",
 };
 
 export class Grid {
@@ -62,6 +64,10 @@ export class Grid {
 
   hasTile(row, col) {
     return this.tiles.some((t) => t.row == row && t.column == col);
+  }
+
+  getTile(row, col) {
+    return this.tiles.find((t) => t.row == row && t.column == col);
   }
 
   getTilesInRow(row) {

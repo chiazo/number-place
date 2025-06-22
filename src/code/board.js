@@ -1,4 +1,5 @@
 import { Grid, Position, Status } from "./grid.js";
+import { Tile } from "./tile.js";
 
 export class Board {
   static valid_numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
@@ -23,6 +24,10 @@ export class Board {
     return result;
   }
 
+  getTile(row, col) {
+    return this.grids.find((g) => g.getTile(row, col));
+  }
+
   nextEmptyTile() {
     if (this.completed()) return;
 
@@ -40,6 +45,26 @@ export class Board {
     if (this.lastFilledTile !== undefined) {
       this.lastFilledTile.reset();
     }
+  }
+
+  clearRandomTile() {
+    const tiles = this.getAllTiles().filter((t) => t.value !== 0);
+    const currTile = tiles[Math.floor(Math.random() * tiles.length)];
+    const originalValue = currTile.value;
+    currTile.reset();
+
+    return {
+      tile: currTile,
+      originalValue: originalValue,
+    };
+  }
+
+  getAllTiles() {
+    const tiles = [];
+    for (const grid of this.grids) {
+      grid.tiles.forEach((t) => tiles.push(t));
+    }
+    return tiles;
   }
 
   completed(log = false) {
@@ -89,6 +114,56 @@ export class Board {
       console.table(data);
     }
     return data;
+  }
+
+  equals(board) {
+    var theirTiles = board
+      .getAllTiles()
+      .map((t) => `${t.row}-${t.column}-${t.value}`);
+    var ourTiles = new Set(
+      this.getAllTiles().map((t) => `${t.row}-${t.column}-${t.value}`)
+    );
+    var equalBoards =
+      theirTiles.length === ourTiles.size &&
+      theirTiles.every((t) => ourTiles.has(t));
+
+    if (!equalBoards) {
+      console.log("mismatches", this.mismatches(board));
+    }
+
+    return equalBoards;
+  }
+
+  mismatches(board) {
+    var theirTiles = board
+      .getAllTiles()
+      .map((t) => `${t.row}-${t.column}-${t.value}`);
+    var ourTiles = new Set(
+      this.getAllTiles().map((t) => `${t.row}-${t.column}-${t.value}`)
+    );
+    const mismatchedTiles = [];
+    const tiles = this.getAllTiles();
+    for (let i = 0; i < theirTiles.length; i++) {
+      if (!ourTiles.has(theirTiles[i])) {
+        mismatchedTiles.push(theirTiles[i]);
+      }
+    }
+    return mismatchedTiles;
+  }
+
+  clone() {
+    const clone = new Board();
+    this.getAllTiles().forEach((t) => clone.setTile(t.row, t.column, t.value));
+    clone.tilesFilled = this.tilesFilled;
+    if (this.lastFilledTile !== undefined) {
+      clone.lastFilledTile = new Tile(
+        this.lastFilledTile.row,
+        this.lastFilledTile.column,
+        this.lastFilledTile.value
+      );
+    }
+
+    return clone;
   }
 
   resetBoard() {
