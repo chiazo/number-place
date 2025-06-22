@@ -6,6 +6,7 @@ export class Board {
   grids;
   tilesFilled;
   lastFilledTile;
+  lastClearedTile;
   constructor() {
     this.resetBoard();
     this.tilesFilled = 0;
@@ -50,6 +51,7 @@ export class Board {
   clearRandomTile() {
     const tiles = this.getAllTiles().filter((t) => t.value !== 0);
     const currTile = tiles[Math.floor(Math.random() * tiles.length)];
+    this.lastClearedTile = currTile.clone();
     const originalValue = currTile.value;
     currTile.reset();
 

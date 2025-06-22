@@ -23,6 +23,10 @@ export class Tile {
     this.value = 0;
   }
 
+  clone() {
+    return new Tile(this.row, this.column, this.value);
+  }
+
   collision(row, col, value) {
     var equal_columns = col == this.column;
     var equal_rows = row == this.row;
