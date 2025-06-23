@@ -1,4 +1,3 @@
-import { Board } from "./board.js";
 import { Status } from "./grid.js";
 import { Generator } from "./generator.js";
 import { Tile } from "./tile.js";
@@ -27,8 +26,11 @@ export class Solver {
         result.status === Status.ALL_MOVES_EXHAUSTED
       ) {
         console.log("Terminating with:", result.status);
-        this.complete_solutions.push(result);
-        return result;
+
+        if (result.board.balanced()) {
+          this.complete_solutions.push(result);
+          return result;
+        }
       }
     }
   }
@@ -150,4 +152,7 @@ export class Solver {
 var solver = new Solver();
 const result = solver.populateSolution();
 console.log(result);
+console.log(result.board.balanced());
+console.log("moves", result.reverseSteps.length);
+console.log("moves v2", result.steps.length);
 result.board.visual();

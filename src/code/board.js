@@ -55,7 +55,7 @@ export class Board {
 
   clearLastFilledTile() {
     if (this.lastFilledTile !== undefined) {
-      this.lastFilledTile.reset();
+      this.lastFilledTile.value = 0;
     }
   }
 
@@ -71,7 +71,7 @@ export class Board {
     this.lastClearedTile.print();
 
     const originalValue = this.lastClearedTile.value;
-    currTile.reset();
+    currTile.value = 0;
 
     return {
       board: this,
@@ -185,6 +185,10 @@ export class Board {
     }
 
     return clone;
+  }
+
+  balanced() {
+    return this.grids.every((g) => g.tiles.some((t) => t.value === 0));
   }
 
   resetBoard() {

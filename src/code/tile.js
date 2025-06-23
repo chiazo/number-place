@@ -19,10 +19,6 @@ export class Tile {
     }
   }
 
-  reset() {
-    this.value = 0;
-  }
-
   print() {
     return `${this.row}-${this.column}-${this.value}`;
   }
