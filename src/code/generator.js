@@ -8,30 +8,27 @@ export class Generator {
     this.complete_boards = [];
   }
 
-  populateBoard() {
+  populateBoard(incomingBoard, reset = true) {
+    if (reset) {
+      this.reset();
+    }
     while (this.complete_boards.length == 0) {
-      const board = new Board();
-      const { status } = this.recursiveSolveBoard(
-        board,
-        board.nextEmptyTile(),
-        []
-      );
-      if (status == Status.BOARD_COMPLETE) {
+      const board = incomingBoard ? incomingBoard : new Board();
+      const result = this.recursiveSolveBoard(board, board.nextEmptyTile(), []);
+      if (result.status == Status.BOARD_COMPLETE) {
         this.complete_boards.push(board);
-        return board;
+        return result;
       }
     }
-    return this.complete_boards[this.complete_boards.length - 1];
+    return { board: board, steps: [], status: Status.ALL_MOVES_EXHAUSTED };
   }
 
   recursiveSolveBoard(board, tile, steps) {
-    if (board.completed() || tile == undefined) {
+    if (board.completed() || !tile) {
       return {
         board: board,
         status: Status.BOARD_COMPLETE,
-        steps: [
-          ...new Set(steps.map((t) => `${t.row}-${t.column}-${t.value}`)),
-        ].map((t) => {
+        steps: [...new Set(steps.map((t) => t.print()))].map((t) => {
           const [row, col, val] = t.split("-");
           return new Tile(row, col, val);
         }),
@@ -45,8 +42,8 @@ export class Generator {
         nums_available[Math.floor(Math.random() * nums_available.length)];
       nums_available = nums_available.filter((n) => n !== rand_val);
       let result = board.setTile(tile.row, tile.column, rand_val);
-      steps.push(tile);
       if (result == Status.VALID_MOVE) {
+        steps.push(tile.clone());
         let { status, steps: updatedSteps } = this.recursiveSolveBoard(
           board,
           board.nextEmptyTile(),

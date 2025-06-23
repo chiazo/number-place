@@ -20,78 +20,110 @@ export class Solver {
 
   populateSolution() {
     while (this.complete_solutions.length == 0) {
-      const board = this.generateCompleteBoard();
+      const { board } = this.generateCompleteBoard();
       const result = this.recursiveSolveBoard(board, [], []);
-      if (result.status == Status.SOLUTION_FOUND) {
+      if (
+        result.status === Status.SOLUTION_FOUND ||
+        result.status === Status.ALL_MOVES_EXHAUSTED
+      ) {
+        console.log("Terminating with:", result.status);
         this.complete_solutions.push(result);
         return result;
       }
     }
   }
 
-  recursiveSolveBoard(board, steps, reverseSteps) {
-    if (!this.compareSteps(steps, reverseSteps)) {
-      board.setTile(
-        board.lastClearedTile.row,
-        board.lastClearedTile.column,
-        board.lastClearedTile.value
+  recursiveSolveBoard(
+    incomingBoard,
+    incomingSteps,
+    incomingRevSteps,
+    incomingLastCleared
+  ) {
+    if (incomingBoard.isEmpty()) {
+      return {
+        board: incomingBoard,
+        steps: incomingBoard,
+        reverseSteps: incomingRevSteps,
+        status: Status.BOARD_INVALID,
+      };
+    }
+
+    if (
+      !this.compareSteps(incomingSteps, incomingRevSteps) &&
+      incomingLastCleared
+    ) {
+      incomingBoard.setTile(
+        incomingLastCleared.row,
+        incomingLastCleared.column,
+        incomingLastCleared.value
       );
       return {
-        board: board,
-        steps: steps.splice(steps.length, 1),
-        reverseSteps: reverseSteps.splice(steps.length, 1),
+        board: incomingBoard,
+        steps: incomingSteps.slice(0, incomingSteps.length - 1),
+        reverseSteps: incomingRevSteps.slice(0, incomingRevSteps.length - 1),
         status: Status.SOLUTION_FOUND,
       };
     }
 
-    if (steps.length > 30) {
+    const inProgressBoard = incomingBoard.clone();
+    const solvedBoard = incomingBoard.clone();
+    const randomTile = solvedBoard.clearRandomTile();
+
+    if (!randomTile) {
       return {
-        board: board,
-        steps: steps,
-        reverseSteps: reverseSteps,
-        status: Status.SOLUTION_FOUND,
+        board: incomingBoard,
+        steps: incomingSteps,
+        reverseSteps: incomingRevSteps,
+        status: Status.ALL_MOVES_EXHAUSTED,
       };
     }
 
-    const { tile, originalValue } = board.clearRandomTile();
-    reverseSteps.push(new Tile(tile.row, tile.column, originalValue));
+    const {
+      board: resultingBoard,
+      steps: solvedSteps,
+      status,
+    } = this.generator.populateBoard(solvedBoard);
 
-    const solvedBoard = board.clone();
-
-    let result = Status.ALL_MOVES_EXHAUSTED;
-    while (result !== Status.BOARD_COMPLETE) {
-      const { status, steps: updatedSteps } =
-        this.generator.recursiveSolveBoard(
-          solvedBoard,
-          solvedBoard.nextEmptyTile(),
-          []
-        );
-
-      if (!this.compareSteps(updatedSteps, reverseSteps)) {
-        return {
-          board: board,
-          steps: updatedSteps.splice(updatedSteps.length - 1),
-          reverseSteps: reverseSteps.splice(reverseSteps.length, -1),
-          status: Status.TOO_MANY_SOLUTIONS,
-        };
-      }
-
-      result = status;
-      steps = updatedSteps;
-      console.log(status);
-
-      if (status == Status.SOLUTION_FOUND) {
-        return {
-          board: board,
-          solution: solvedBoard,
-          steps: updatedSteps,
-          reverseSteps: reverseSteps,
-          status: Status.SOLUTION_FOUND,
-        };
-      }
+    if (status == Status.ALL_MOVES_EXHAUSTED || !resultingBoard) {
+      return {
+        board: incomingBoard,
+        steps: solvedSteps,
+        reverseSteps: incomingRevSteps,
+        status: Status.ALL_MOVES_EXHAUSTED,
+      };
     }
 
-    return this.recursiveSolveBoard(board, steps, reverseSteps);
+    const { tile, originalValue } = randomTile;
+    const revCopy = incomingRevSteps.slice();
+
+    if (
+      !this.compareSteps(solvedSteps, revCopy) &&
+      solvedSteps.length === revCopy.length
+    ) {
+      const lastCleared = randomTile;
+      const resetBoard = inProgressBoard.clone();
+
+      resetBoard.setTile(
+        lastCleared.row,
+        lastCleared.column,
+        lastCleared.value
+      );
+      return {
+        board: resetBoard,
+        steps: solvedSteps,
+        reverseSteps: revCopy,
+        status: Status.SOLUTION_FOUND,
+      };
+    } else {
+      revCopy.push(new Tile(tile.row, tile.column, originalValue));
+      console.log(inProgressBoard.resetTile(tile.row, tile.column));
+      return this.recursiveSolveBoard(
+        inProgressBoard.clone(),
+        solvedSteps.slice(),
+        revCopy.slice(),
+        new Tile(tile.row, tile.column, originalValue)
+      );
+    }
   }
 
   compareSteps(steps, reverseSteps) {

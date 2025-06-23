@@ -26,7 +26,18 @@ export class Board {
   }
 
   getTile(row, col) {
-    return this.grids.find((g) => g.getTile(row, col));
+    const g = this.grids.find((g) => g.getTile(row, col));
+    return g.tiles.find((t) => t.row === row && t.column === col);
+  }
+
+  resetTile(row, col) {
+    let t = this.getAllTiles().find((t) => t.row === row && t.column == col);
+    t.value = 0;
+    return t;
+  }
+
+  isEmpty() {
+    return this.getAllTiles().every((t) => t.value === 0);
   }
 
   nextEmptyTile() {
@@ -49,13 +60,21 @@ export class Board {
   }
 
   clearRandomTile() {
+    if (this.isEmpty()) {
+      return;
+    }
     const tiles = this.getAllTiles().filter((t) => t.value !== 0);
-    const currTile = tiles[Math.floor(Math.random() * tiles.length)];
+    const randIdx = Math.floor(Math.random() * tiles.length);
+    const currTile = tiles[randIdx];
     this.lastClearedTile = currTile.clone();
-    const originalValue = currTile.value;
+
+    this.lastClearedTile.print();
+
+    const originalValue = this.lastClearedTile.value;
     currTile.reset();
 
     return {
+      board: this,
       tile: currTile,
       originalValue: originalValue,
     };

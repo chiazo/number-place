@@ -23,6 +23,10 @@ export class Tile {
     this.value = 0;
   }
 
+  print() {
+    return `${this.row}-${this.column}-${this.value}`;
+  }
+
   clone() {
     return new Tile(this.row, this.column, this.value);
   }
