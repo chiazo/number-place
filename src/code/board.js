@@ -14,12 +14,12 @@ export class Board {
 
   setTile(row, col, new_value) {
     const grid = this.grids.find((g) => g.hasTile(row, col));
-    if (grid == undefined || !this.isValidSelection(row, col, new_value)) {
+    if (grid === undefined || !this.isValidSelection(row, col, new_value)) {
       return Status.INVALID_MOVE;
     }
 
     var [result, tile] = grid.updateTile(row, col, new_value);
-    if (result == Status.VALID_MOVE) {
+    if (result === Status.VALID_MOVE) {
       this.lastFilledTile = tile;
     }
     return result;
@@ -31,7 +31,7 @@ export class Board {
   }
 
   resetTile(row, col) {
-    let t = this.getAllTiles().find((t) => t.row === row && t.column == col);
+    let t = this.getAllTiles().find((t) => t.row === row && t.column === col);
     t.value = 0;
     return t;
   }
@@ -44,7 +44,7 @@ export class Board {
     if (this.completed()) return;
 
     for (const grid of this.grids) {
-      const emptyTile = grid.tiles.find((t) => t.value == 0);
+      const emptyTile = grid.tiles.find((t) => t.value === 0);
       if (emptyTile) return emptyTile;
     }
   }
@@ -99,7 +99,8 @@ export class Board {
     }
     this.tilesFilled = count;
     return (
-      count == 81 || !this.grids.some((g) => g.tiles.some((t) => t.value == 0))
+      count === 81 ||
+      !this.grids.some((g) => g.tiles.some((t) => t.value === 0))
     );
   }
 
@@ -163,7 +164,7 @@ export class Board {
       this.getAllTiles().map((t) => `${t.row}-${t.column}-${t.value}`)
     );
     const mismatchedTiles = [];
-    const tiles = this.getAllTiles();
+
     for (let i = 0; i < theirTiles.length; i++) {
       if (!ourTiles.has(theirTiles[i])) {
         mismatchedTiles.push(theirTiles[i]);

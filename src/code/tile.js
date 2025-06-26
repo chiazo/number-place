@@ -28,13 +28,13 @@ export class Tile {
   }
 
   collision(row, col, value) {
-    var equal_columns = col == this.column;
-    var equal_rows = row == this.row;
+    var equal_columns = col === this.column;
+    var equal_rows = row === this.row;
 
     if (!equal_columns && !equal_rows) {
       return false;
     }
 
-    return this.value == value;
+    return this.value === value;
   }
 }

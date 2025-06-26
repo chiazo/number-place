@@ -32,8 +32,8 @@ export class Grid {
   }
 
   updateTile(row, col, new_value, log = false) {
-    const tile = this.tiles.find((t) => t.row == row && t.column == col);
-    if (tile == undefined || !this.isValidSelection(new_value)) {
+    const tile = this.tiles.find((t) => t.row === row && t.column === col);
+    if (tile === undefined || !this.isValidSelection(new_value)) {
       return Status.INVALID_MOVE;
     }
     const original_value = tile.value;
@@ -51,8 +51,8 @@ export class Grid {
     if (new_value < 1 || new_value > 9) {
       return false;
     }
-    const tileCollision = this.tiles.find((t) => t.value == new_value);
-    const isValid = tileCollision == undefined;
+    const tileCollision = this.tiles.find((t) => t.value === new_value);
+    const isValid = tileCollision === undefined;
     if (!isValid && log) {
       console.log(
         `${this.position.toLowerCase()} grid collison! [${tileCollision.row}, ${
@@ -64,19 +64,19 @@ export class Grid {
   }
 
   hasTile(row, col) {
-    return this.tiles.some((t) => t.row == row && t.column == col);
+    return this.tiles.some((t) => t.row === row && t.column === col);
   }
 
   getTile(row, col) {
-    return this.tiles.find((t) => t.row == row && t.column == col);
+    return this.tiles.find((t) => t.row === row && t.column === col);
   }
 
   getTilesInRow(row) {
-    return this.tiles.filter((t) => t.row == row);
+    return this.tiles.filter((t) => t.row === row);
   }
 
   getTilesInColumn(col) {
-    return this.tiles.filter((t) => t.column == col);
+    return this.tiles.filter((t) => t.column === col);
   }
 
   static getStartPosition(position) {

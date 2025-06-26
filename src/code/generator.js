@@ -12,15 +12,14 @@ export class Generator {
     if (reset) {
       this.reset();
     }
-    while (this.complete_boards.length == 0) {
+    while (this.complete_boards.length === 0) {
       const board = incomingBoard ? incomingBoard : new Board();
       const result = this.recursiveSolveBoard(board, board.nextEmptyTile(), []);
-      if (result.status == Status.BOARD_COMPLETE) {
+      if (result.status === Status.BOARD_COMPLETE) {
         this.complete_boards.push(board);
         return result;
       }
     }
-    return { board: board, steps: [], status: Status.ALL_MOVES_EXHAUSTED };
   }
 
   recursiveSolveBoard(board, tile, steps) {
@@ -42,7 +41,7 @@ export class Generator {
         nums_available[Math.floor(Math.random() * nums_available.length)];
       nums_available = nums_available.filter((n) => n !== rand_val);
       let result = board.setTile(tile.row, tile.column, rand_val);
-      if (result == Status.VALID_MOVE) {
+      if (result === Status.VALID_MOVE) {
         steps.push(tile.clone());
         let { status, steps: updatedSteps } = this.recursiveSolveBoard(
           board,
@@ -52,7 +51,7 @@ export class Generator {
         if (status !== Status.BOARD_COMPLETE) {
           board.clearLastFilledTile();
           updatedSteps = updatedSteps.filter(
-            (t) => !(t.row == tile.row && t.column == tile.column)
+            (t) => !(t.row === tile.row && t.column === tile.column)
           );
         } else {
           return { board: board, status: status, steps: updatedSteps };

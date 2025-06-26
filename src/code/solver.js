@@ -18,7 +18,7 @@ export class Solver {
   }
 
   populateSolution() {
-    while (this.complete_solutions.length == 0) {
+    while (this.complete_solutions.length === 0) {
       const { board } = this.generateCompleteBoard();
       const result = this.recursiveSolveBoard(board, [], []);
       if (
@@ -86,7 +86,7 @@ export class Solver {
       status,
     } = this.generator.populateBoard(solvedBoard);
 
-    if (status == Status.ALL_MOVES_EXHAUSTED || !resultingBoard) {
+    if (status === Status.ALL_MOVES_EXHAUSTED || !resultingBoard) {
       return {
         board: incomingBoard,
         steps: solvedSteps,
@@ -118,7 +118,7 @@ export class Solver {
       };
     } else {
       revCopy.push(new Tile(tile.row, tile.column, originalValue));
-      console.log(inProgressBoard.resetTile(tile.row, tile.column));
+      inProgressBoard.resetTile(tile.row, tile.column);
       return this.recursiveSolveBoard(
         inProgressBoard.clone(),
         solvedSteps.slice(),
@@ -149,10 +149,10 @@ export class Solver {
   }
 }
 
-var solver = new Solver();
-const result = solver.populateSolution();
-console.log(result);
-console.log(result.board.balanced());
-console.log("moves", result.reverseSteps.length);
-console.log("moves v2", result.steps.length);
-result.board.visual();
+// var solver = new Solver();
+// const result = solver.populateSolution();
+// console.log(result);
+// console.log(result.board.balanced());
+// console.log("moves", result.reverseSteps.length);
+// console.log("moves v2", result.steps.length);
+// result.board.visual();

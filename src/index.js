@@ -1,6 +1,5 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import { HashRouter, Route } from "react-router-dom";
+import { createRoot } from "react-dom/client";
+import { HashRouter, Routes, Route } from "react-router-dom";
 
 import { Header, Footer } from "./components";
 import App from "./App";
@@ -12,11 +11,14 @@ const Index = () => (
     <HashRouter>
       <Header />
       <div>
-        <Route exact path="/" component={App} />
+        <Routes>
+          <Route path="/" element={<App />} />
+        </Routes>
       </div>
       <Footer />
     </HashRouter>
   </div>
 );
 
-ReactDOM.render(<Index />, document.getElementById("root"));
+const root = createRoot(document.getElementById("root"));
+root.render(<Index />);
